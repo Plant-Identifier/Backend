@@ -35,7 +35,7 @@ loss_function = torch.nn.CrossEntropyLoss()
 optimizer = optim.SGD(model.parameters(), lr=0.001, momentum = 0.9)
 
 # number of epochs (iterations over training set)
-num_epochs = 10  # You can adjust this
+num_epochs = 15  # You can adjust this
 
 # for each epoch
 for epoch in range(num_epochs):
@@ -92,3 +92,4 @@ for epoch in range(num_epochs):
     print(f'Accuracy on validation set: {100 * correct / total}%')
 
     torch.save(model.state_dict(), 'plantscout.pth')
+    print("Model successfully saved to plantscout.pth")

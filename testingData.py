@@ -1,13 +1,14 @@
-import torch
-from torchvision import transforms, datasets
+import torch 
 from torch.utils.data import DataLoader
+from torchvision import transforms, datasets
 import torchvision.models as models
 
 # Transform the test images for pytorch
 test_transform = transforms.Compose([transforms.Resize((256,256)), transforms.ToTensor()])
 
 # Get the testing dataset (change the file path to the testing dataset file path)
-test_dataset = datasets.ImageFolder(root='plants\datasets\dataset-testing', transform=test_transform)
+test_dataset =datasets.ImageFolder(root= 'plants\datasets\dataset-test', transform=test_transform)
+
 
 # Create the data loader for the testing dataset
 test_loader = DataLoader(test_dataset, batch_size=64, shuffle=False)
@@ -19,7 +20,7 @@ num_classes = 62
 model.fc = torch.nn.Linear(model.fc.in_features, num_classes)
 
 # Load the trained weights from our model (change the file path to the file path of our model)
-model.load_state_dict(torch.load('path-to-mode.pth'))
+model.load_state_dict(torch.load('plantscout.pth'))
 model.eval()
 
 # Function to test the model 
