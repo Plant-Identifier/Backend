@@ -34,34 +34,61 @@ model.fc = torch.nn.Linear(model.fc.in_features, num_classes)
 loss_function = torch.nn.CrossEntropyLoss()
 optimizer = optim.SGD(model.parameters(), lr=0.001, momentum = 0.9)
 
-
+# number of epochs (iterations over training set)
 num_epochs = 10  # You can adjust this
 
+# for each epoch
 for epoch in range(num_epochs):
-    model.train()  # Set the model to training mode
+    
+    # set to training mode
+    model.train()
+
+    # set the loss
     running_loss = 0.0
+
+    # loops over training batches
+    # images contains input, labels contains what each image is
     for images, labels in train_loader:
-        optimizer.zero_grad()  # Zero the parameter gradients
-        outputs = model(images)  # Forward pass
-        loss = loss_function(outputs, labels)  # Compute the loss
-        loss.backward()  # Backpropagation
-        optimizer.step()  # Update model parameters
+
+        # sets gradient to zero
+        optimizer.zero_grad()
+
+        # performs forward pass, generates predictions for input images
+        outputs = model(images)
+
+        # computes loss, measures difference from model prediction to truth label
+        loss = loss_function(outputs, labels)
+
+        # backpropagation, gradients are computer for all model parameters
+        loss.backward()
+
+        # updates model parameter w/ optimization algorithm
+        optimizer.step()
+
+        # accumulates loss
         running_loss += loss.item()
 
-    # Print statistics
+    # print statistics
     print(f'Epoch {epoch + 1}, Loss: {running_loss / len(train_loader)}')
 
-    # Validate after each epoch
-    model.eval()  # Set the model to evaluation mode
+    # validate after each epoch
+    # set to evaluation mode
+    model.eval()
+
+    # tracks correct & total images
     correct = 0
     total = 0
-    with torch.no_grad():  # Disable gradient tracking
+
+    # context manager disables gradient tracking
+    with torch.no_grad():
+
+        # loops over validation data
         for images, labels in val_loader:
             outputs = model(images)
             _, predicted = torch.max(outputs.data, 1)
             total += labels.size(0)
             correct += (predicted == labels).sum().item()
+    
     print(f'Accuracy on validation set: {100 * correct / total}%')
 
-
-
+    torch.save(model.state_dict(), 'plantscout.pth')
