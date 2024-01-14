@@ -121,6 +121,9 @@ def upload():
     # Predict an image
     image_path = 'test.png'
     predicted_class, confidence = ps.predict_image(image_path, model, class_names)
+    if confidence < 50:
+        return "error"
+    
     print(f'The predicted class for the image is: {predicted_class} with confidence of {confidence:.2%}')
 
     os.remove(image_path)
