@@ -8,6 +8,9 @@ import torch.nn.functional as F
 import os 
 # for images 
 from PIL import Image 
+from flask import Flask, jsonify
+from flask import request
+from werkzeug.utils import secure_filename
 
 # list of instructions for how to prepare pictures
 transform = transforms.Compose([transforms.Resize((256,256)), transforms.ToTensor()])
@@ -51,6 +54,7 @@ def predict_image(image_path, model, class_names, transform):
     
     else:
         print(f'The predicted class for the image is: {predicted_class} with confidence of {confidence:.2%}')
+        return predicted_class
 
 # load the class names
 with open('class_names.json', 'r') as f:
@@ -59,6 +63,29 @@ with open('class_names.json', 'r') as f:
 # load the trained model
 model.load_state_dict(torch.load('plantscout.pth'))
 
-# predict image based on file path (current set statically, change for dynamic)
-predicted_class = predict_image('plants\datasets\dataset-user_images\lambo.jpg', model, class_names, transform)
+app = Flask(__name__)
 
+#NOT CURRENTLY WORKING NEED TO DO MORE TESTING THIS IS A DRAFT 
+@app.route('/evaluate', methods=['POST'])
+def evaluate():
+    return("test")
+
+    if 'file' not in request.files:
+        return "No file part", 400
+
+    file = request.files['file']
+    print(file)
+
+    if file.filename == '':
+        return "No selected file", 400
+    
+    filep = os.path.join('/tmp', filename)
+    print(filep)
+    file.save(filep)
+
+    # predict image based on file path (current set statically, change for dynamic)
+    predicted_class = predict_image(filepath, model, class_names, transform)
+
+    os.remove(filep)
+
+    return jsonify(predicted_class)
