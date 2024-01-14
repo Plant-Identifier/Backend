@@ -4,6 +4,11 @@ from flask import render_template
 from flask import request
 import mysql.connector
 from datetime import datetime
+from PIL import Image 
+from io import BytesIO
+import json
+import base64
+import userTest as ps
 
 app = Flask(__name__)
 
@@ -92,4 +97,30 @@ def change_Discover():
         db.commit()
     #return statement 
     return "Update successful"
+
+#evaluate the image using the pytorch model 
+@app.route('/upload', methods=['POST'])
+def upload():
+
+    # Load the model and class names
+    model = ps.load_model('plantscout.pth')
+    class_names = ps.load_class_names('class_names.json')
+
+    #recieve the data 
+    data = json.loads(request.data)["image"]
+
+    #decode the data 
+    header, encoded = data.split(",", 1)
+    data = base64.b64decode(encoded)
+
+    # convert to image file
+    with Image.open(BytesIO(data)) as img:
+        img.save("test.png")
+
+    # Predict an image
+    image_path = 'test.png'
+    predicted_class, confidence = ps.predict_image(image_path, model, class_names)
+    print(f'The predicted class for the image is: {predicted_class} with confidence of {confidence:.2%}')
+
+    return predicted_class
 
