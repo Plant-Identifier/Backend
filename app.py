@@ -9,6 +9,7 @@ from io import BytesIO
 import json
 import base64
 import userTest as ps
+import os
 
 app = Flask(__name__)
 
@@ -121,6 +122,8 @@ def upload():
     image_path = 'test.png'
     predicted_class, confidence = ps.predict_image(image_path, model, class_names)
     print(f'The predicted class for the image is: {predicted_class} with confidence of {confidence:.2%}')
+
+    os.remove(image_path)
 
     return predicted_class
 
